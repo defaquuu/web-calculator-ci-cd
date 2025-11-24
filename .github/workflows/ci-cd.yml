@@ -53,6 +53,11 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    - name: Восстанавливаем зависимости ПЕРЕД сборкой
+      run: |
+        dotnet restore ${{ env.PROJECT_PATH }}
+        dotnet restore ${{ env.TEST_PATH }}
+
     - name: Собираем проект
       run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
 

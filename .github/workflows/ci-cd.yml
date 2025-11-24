@@ -1,0 +1,149 @@
+name: Web Calculator CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_PATH: 'src/WebCalculator'
+  TEST_PATH: 'tests/WebCalculator.Tests'
+
+jobs:
+  setup:
+    name: Подготовка окружения
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Загружаем код из репозитория
+      uses: actions/checkout@v4
+
+    - name: Проверяем структуру проекта
+      run: |
+        echo "Проверяем наличие всех файлов..."
+        ls -la
+        echo "---"
+        ls -la src/WebCalculator/
+        echo "---"
+        ls -la tests/WebCalculator.Tests/
+
+    - name: Устанавливаем .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Восстанавливаем зависимости
+      run: |
+        dotnet restore ${{ env.PROJECT_PATH }}
+        dotnet restore ${{ env.TEST_PATH }}
+
+  build:
+    name: Сборка проекта
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Загружаем код
+      uses: actions/checkout@v4
+
+    - name: Устанавливаем .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Собираем проект
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+    - name: Проверяем результат сборки
+      run: |
+        echo "Проверяем собранные файлы..."
+        ls -la ${{ env.PROJECT_PATH }}/bin/Release/net8.0/
+
+    - name: Сохраняем собранное приложение
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-calculator-app
+        path: ${{ env.PROJECT_PATH }}/bin/Release/net8.0/
+        retention-days: 7
+
+  test:
+    name: Запуск тестов
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Загружаем код
+      uses: actions/checkout@v4
+
+    - name: Устанавливаем .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Запускаем unit-тесты
+      run: dotnet test ${{ env.TEST_PATH }} --verbosity normal --logger "trx"
+
+    - name: Сохраняем результаты тестов
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: ${{ env.TEST_PATH }}/TestResults/
+        retention-days: 30
+
+  package:
+    name: Создание пакета
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Загружаем код
+      uses: actions/checkout@v4
+
+    - name: Устанавливаем .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Публикуем приложение
+      run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ./publish --self-contained false
+
+    - name: Архивируем приложение
+      run: |
+        zip -r web-calculator-v1.0.0.zip ./publish/*
+        echo "Размер архива:"
+        ls -lh web-calculator-v1.0.0.zip
+
+    - name: Сохраняем релизный пакет
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-package
+        path: web-calculator-v1.0.0.zip
+        retention-days: 30
+
+  report:
+    name: Итоговый отчет
+    needs: [setup, build, test, package]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Генерируем отчет
+      run: |
+        echo "============================================================="
+        echo "CI/CD ПАЙПЛАН УСПЕШНО ЗАВЕРШЕН!"
+        echo "============================================================="
+        echo ""
+        echo "ВЫПОЛНЕННЫЕ ЭТАПЫ:"
+        echo "Подготовка окружения"
+        echo "Сборка веб-приложения"
+        echo "Запуск всех тестов"
+        echo "Создание релизного пакета"
+        echo ""
+        echo "СОЗДАННЫЕ АРТЕФАКТЫ:"
+        echo "web-calculator-app – собранное приложение"
+        echo "test-results – результаты тестирования"
+        echo "release-package – релизный пакет"
+        echo ""
+        echo "Время: $(date)"
+        echo "============================================================="

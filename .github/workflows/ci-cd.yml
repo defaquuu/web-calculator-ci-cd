@@ -1,26 +1,4 @@
-name: Simple CI
-
-on: [push]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-    - name: Restore and Build
-      run: |
-
-
-
-
-
-
-
-
+# Пересоздаем файл с правильным YAML
 cat > .github/workflows/ci-cd.yml << 'EOF'
 name: Simple CI
 
@@ -43,3 +21,4 @@ jobs:
         dotnet build tests/WebCalculator.Tests/WebCalculator.Tests.csproj
     - name: Test
       run: dotnet test tests/WebCalculator.Tests/WebCalculator.Tests.csproj
+EOF

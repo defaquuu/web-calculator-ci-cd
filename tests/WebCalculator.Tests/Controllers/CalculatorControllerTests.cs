@@ -27,17 +27,15 @@ public class CalculatorControllerTests
         Assert.True(response.Success);
         Assert.Equal(15, response.Result);
     }
+[Fact]
+public void GetAvailableOperations_ReturnsListOfOperations()
+{
+    // Act
+    var result = _controller.GetAvailableOperations();
 
-    [Fact]
-    public void GetAvailableOperations_ReturnsListOfOperations()
-    {
-        // Act
-        var result = _controller.GetAvailableOperations();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        var operations = Assert.IsType<List<string>>(okResult.Value);
-        Assert.Equal(5, operations.Count);
-        Assert.Contains("add", operations);
-    }
+    // Assert
+    var okResult = Assert.IsType<OkObjectResult>(result.Result);
+    var operations = Assert.IsType<List<string>>(okResult.Value);
+    Assert.Equal(5, operations.Count);
+    Assert.Contains("add", operations);
 }

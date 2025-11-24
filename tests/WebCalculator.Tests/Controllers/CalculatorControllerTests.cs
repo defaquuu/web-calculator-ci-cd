@@ -3,7 +3,7 @@ using WebCalculator.Controllers;
 using WebCalculator.Models;
 using Xunit;
 
-public class CalculatorControllerTests 
+public class CalculatorControllerTests
 {
     private readonly CalculatorController _controller = new();
 

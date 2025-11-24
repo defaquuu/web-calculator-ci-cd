@@ -31,8 +31,7 @@ public class CalculatorController : ControllerBase
     }
 
     [HttpGet("operations")]
-    public ActionResult<List<string>> GetAvailableOperations()
-    {
-        return new List<string> { "add", "subtract", "multiply", "divide", "power" };
-    }
+public ActionResult<List<string>> GetAvailableOperations()
+{
+    return Ok(new List<string> { "add", "subtract", "multiply", "divide", "power" });
 }

@@ -11,7 +11,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-    - name: Build
-      run: dotnet build
+    - name: Build Calculator
+      run: dotnet build src/WebCalculator
+    - name: Build Tests
+      run: dotnet build tests/WebCalculator.Tests
     - name: Test
-      run: dotnet test
+      run: dotnet test tests/WebCalculator.Tests

@@ -1,5 +1,3 @@
-# Пересоздаем файл с правильным YAML
-cat > .github/workflows/ci-cd.yml << 'EOF'
 name: Simple CI
 
 on: [push]
@@ -21,4 +19,3 @@ jobs:
         dotnet build tests/WebCalculator.Tests/WebCalculator.Tests.csproj
     - name: Test
       run: dotnet test tests/WebCalculator.Tests/WebCalculator.Tests.csproj
-EOF

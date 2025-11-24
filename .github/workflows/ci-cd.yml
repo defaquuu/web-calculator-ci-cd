@@ -11,9 +11,35 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-    - name: Build Calculator
-      run: dotnet build src/WebCalculator
-    - name: Build Tests
-      run: dotnet build tests/WebCalculator.Tests
+    - name: Restore and Build
+      run: |
+
+
+
+
+
+
+
+
+cat > .github/workflows/ci-cd.yml << 'EOF'
+name: Simple CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore and Build
+      run: |
+        dotnet restore src/WebCalculator/WebCalculator.csproj
+        dotnet restore tests/WebCalculator.Tests/WebCalculator.Tests.csproj
+        dotnet build src/WebCalculator/WebCalculator.csproj
+        dotnet build tests/WebCalculator.Tests/WebCalculator.Tests.csproj
     - name: Test
-      run: dotnet test tests/WebCalculator.Tests
+      run: dotnet test tests/WebCalculator.Tests/WebCalculator.Tests.csproj
